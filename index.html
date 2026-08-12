@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Vocabulario: No Mientas (Nivel C1)</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --bg: #fdfbf7;
+            --box-bg: #ffffff;
+            --text: #333333;
+            --correct: #27ae60;
+            --incorrect: #c0392b;
+            --typo: #e67e22;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--box-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: var(--secondary);
+            margin-top: 40px;
+            border-left: 5px solid var(--secondary);
+            padding-left: 15px;
+        }
+        .instructions {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-style: italic;
+            color: var(--primary);
+        }
+        .question {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .question label {
+            flex-grow: 1;
+        }
+        input[type="text"], select {
+            padding: 8px 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            outline: none;
+            min-width: 200px;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent);
+        }
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .word-bank span {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #dcdde1;
+        }
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 50px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #1a252f;
+        }
+        #result-container {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: #f1f2f6;
+        }
+        .correct-ans {
+            color: var(--correct);
+            font-weight: bold;
+            margin-left: 10px;
+            display: none;
+            font-size: 0.9em;
+        }
+        .status-icon {
+            font-size: 1.2em;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>No Mientas - Test de Vocabulario (C1)</h1>
+        
+        <div class="instructions">
+            <strong>Instrucciones generales:</strong> Lee atentamente cada enunciado. Completa los espacios en blanco, traduce o selecciona la opción correcta según corresponda. Al finalizar, pulsa el botón "Mostrar las respuestas" para corregir tu test automáticamente y ver tu puntuación final. Se admiten hasta 2 errores tipográficos (o letras sueltas incorrectas) en respuestas largas. Escribe en minúsculas y sin puntos finales.
+        </div>
+
+        <!-- Ejercicio 1: Sinónimos -->
+        <h2>1. Búsqueda de sinónimos</h2>
+        <div class="instructions">Selecciona el sinónimo o la palabra/expresión que mejor corresponde a la definición dada.</div>
+        <div id="task1"></div>
+
+        <!-- Ejercicio 2: Traducción -->
+        <h2>2. Traducción del ruso al español</h2>
+        <div class="instructions">Traduce las siguientes expresiones o frases al español utilizando el vocabulario del libro. (Escribe la frase exacta en minúsculas).</div>
+        <div id="task2"></div>
+
+        <!-- Ejercicio 3: Preposiciones -->
+        <h2>3. Preposiciones</h2>
+        <div class="instructions">Escribe la preposición que falta en la frase (en, de, a, con, por...).</div>
+        <div id="task3"></div>
+
+        <!-- Ejercicio 4: Huecos -->
+        <h2>4. Completar las frases</h2>
+        <div class="instructions">Completa las frases con una de las palabras del recuadro. Conjuga o adapta si es estrictamente necesario, aunque la mayoría encajan tal cual.</div>
+        <div class="word-bank" id="wordBank"></div>
+        <div id="task4"></div>
+
+        <!-- Ejercicio 5: Emparejamiento (Significados) -->
+        <h2>5. Significados de expresiones e modismos</h2>
+        <div class="instructions">Selecciona la frase o modismo que corresponde al significado propuesto.</div>
+        <div id="task5"></div>
+
+        <!-- Ejercicio 6: Gramática -->
+        <h2>6. Gramática (Tiempos pasados, subjuntivo e imperativo)</h2>
+        <div class="instructions">Elige la forma verbal correcta que mejor complete la oración teniendo en cuenta la concordancia de tiempos, el modo (indicativo/subjuntivo) o el uso del imperativo.</div>
+        <div id="task6"></div>
+
+        <button class="btn-submit" onclick="checkAnswers()">Mostrar las respuestas y calcular resultado</button>
+        <div id="result-container">
+            Puntuación: <span id="score"></span> / <span id="total"></span> (<span id="percentage"></span>%)
+        </div>
+    </div>
+
+<script>
+    const data = {
+        task1: [
+            { q: "1. Oscuro, tétrico o melancólico.", options: ["sombrío", "sinuoso", "alterado"], a: "sombrío" },
+            { q: "2. Que no cesa, que no se detiene.", options: ["ininteligible", "incesante", "errático"], a: "incesante" },
+            { q: "3. Acto de presentarse formalmente, por ejemplo un alcalde.", options: ["explanada", "comparecencia", "ojeada"], a: "comparecencia" },
+            { q: "4. Estar muy nervioso o excitado.", options: ["alterado", "tajante", "amenazante"], a: "alterado" },
+            { q: "5. Que hace curvas, tortuoso (como un camino).", options: ["desapacible", "sinuoso", "errático"], a: "sinuoso" },
+            { q: "6. Echar un vistazo rápido a algo.", options: ["dar por terminado", "ojeada", "desechar"], a: "ojeada" },
+            { q: "7. Rodear o presionar a alguien insistentemente.", options: ["asediar", "idolatrar", "inundar"], a: "asediar" },
+            { q: "8. Que no se puede comprender al escuchar.", options: ["ininteligibles", "llamativos", "tajantes"], a: "ininteligibles" },
+            { q: "9. Rechazar, descartar algo o a alguien.", options: ["desechar", "apreciar", "afanarse"], a: "desechar" },
+            { q: "10. Documento que se envía junto a un correo electrónico.", options: ["remitente", "archivo adjunto", "correo basura"], a: "archivo adjunto" },
+            { q: "11. Persona que envía un paquete o carta.", options: ["remitente", "alcalde", "acompañante"], a: "remitente" },
+            { q: "12. Que amenaza o muestra intención de hacer daño.", options: ["tajante", "amenazante", "desapacible"], a: "amenazante" },
+            { q: "13. Falta de precaución, acto arriesgado.", options: ["imprudencia", "necesidad", "pesadilla"], a: "imprudencia" },
+            { q: "14. Adorar a alguien o algo con devoción excesiva.", options: ["idolatrar", "apreciar", "reparar"], a: "idolatrar" },
+            { q: "15. Espacio llano, terreno despejado y plano.", options: ["explanada", "salida", "ojeada"], a: "explanada" },
+            { q: "16. Disminuir la velocidad.", options: ["ralentizar la marcha", "enfilar la salida", "apretar el volante"], a: "ralentizar la marcha" },
+            { q: "17. Llenar de agua, o abrumar con mucha cantidad de algo.", options: ["inundar", "asediar", "desechar"], a: "inundar" },
+            { q: "18. Que no tiene rumbo fijo, impredecible.", options: ["errático", "sinuoso", "sombrío"], a: "errático" },
+            { q: "19. Responder de forma rotunda y sin admitir discusión.", options: ["responder tajante", "murmurar palabras", "apreciar gritos"], a: "responder tajante" },
+            { q: "20. Arma de fuego usada para disparar a animales.", options: ["rifle de caza", "fuerte manotazo", "amenaza obvia"], a: "rifle de caza" },
+            { q: "21. Lugar trasero en un coche.", options: ["asiento posterior", "asiento del acompañante", "explanada"], a: "asiento posterior" },
+            { q: "22. Que resulta desagradable (clima o trato).", options: ["desapacible", "sombrío", "tajante"], a: "desapacible" },
+            { q: "23. Esforzarse mucho en conseguir algo.", options: ["afanarse en", "dar por", "reparar en"], a: "afanarse en" },
+            { q: "24. Darse cuenta de algo, notarlo.", options: ["reparar en", "apreciar los gritos", "mantener la concentración"], a: "reparar en" },
+            { q: "25. Terminar algo de forma oficial o mental.", options: ["dar por terminado", "enfilar la salida", "desechar"], a: "dar por terminado" },
+            { q: "26. Dirigirse hacia la puerta o vía de escape.", options: ["enfilar la salida", "ralentizar la marcha", "apretar el volante"], a: "enfilar la salida" },
+            { q: "27. Golpe fuerte dado con la mano abierta.", options: ["fuerte manotazo", "ojeada", "amenaza obvia"], a: "fuerte manotazo" },
+            { q: "28. Lo opuesto a hablar claro, susurrar cosas confusas.", options: ["murmurar palabras ininteligibles", "responder tajante", "apreciar los gritos"], a: "murmurar palabras ininteligibles" },
+            { q: "29. Anuncios que captan mucho la atención.", options: ["llamativos reclamos", "correo basura", "mera necesidad biológica"], a: "llamativos reclamos" },
+            { q: "30. Percibir o escuchar lamentos y voces muy altas.", options: ["apreciar los gritos", "murmurar palabras", "respiración se agita"], a: "apreciar los gritos" }
+        ],
+        task2: [
+            { q: "1. мрачная и неприветливая ноябрьская среда", a: "un miércoles de noviembre sombrío y desapacible" },
+            { q: "2. изо всех сил стараться закончить статью", a: "afanarse en terminar un artículo" },
+            { q: "3. непрерывно осаждать редакцию", a: "incesante asediar la redacción" },
+            { q: "4. считать статью законченной", a: "dar por terminado el artículo" },
+            { q: "5. обратить внимание на письмо (тему)", a: "reparar en un asunto" },
+            { q: "6. очевидная угроза вируса", a: "la amenaza obvia de un virus" },
+            { q: "7. броские рекламные лозунги", a: "llamativos reclamos" },
+            { q: "8. как будто этого было мало; вдобавок ко всему", a: "por si fuera poco" },
+            { q: "9. точно так же, как; именно так, как", a: "tal y como" },
+            { q: "10. инстинкт заставляет действовать", a: "apremiar el instinto" },
+            { q: "11. начаться кошмару", a: "desatarse la pesadilla" },
+            { q: "12. дыхание учащается", a: "la respiración se agita" },
+            { q: "13. вести машину в возбуждённом состоянии", a: "conducir alterado" },
+            { q: "14. усадить на заднее сиденье", a: "sentar en el asiento posterior" },
+            { q: "15. вести машину хаотично", a: "conducir errático" },
+            { q: "16. сбавить скорость", a: "ralentizar la marcha" },
+            { q: "17. крепко сжать руль", a: "apretar fuerte el volante" },
+            { q: "18. бормотать нечленораздельные слова", a: "murmurar palabras ininteligibles" },
+            { q: "19. пассажирское сиденье", a: "el asiento del acompañante" },
+            { q: "20. ответить резко, категорично", a: "responder tajante" },
+            { q: "21. услышать крики внутри", a: "apreciar los gritos en el interior" },
+            { q: "22. направиться к выходу", a: "enfilar la salida" },
+            { q: "23. охотничье ружьё", a: "rifle de caza" },
+            { q: "24. сбить сильным ударом руки", a: "derribar de un fuerte manotazo" },
+            { q: "25. действительно, несомненно", a: "ciertamente" },
+            { q: "26. всего лишь биологическая потребность", a: "una mera necesidad biológica" },
+            { q: "27. боготворить, обожать", a: "idolatrar" },
+            { q: "28. спокойный обед с хорошим вином", a: "comida tranquila regada con un buen vino" },
+            { q: "29. сохранять концентрацию", a: "mantener la concentración" },
+            { q: "30. содержать прикреплённый файл", a: "contener un archivo adjunto" }
+        ],
+        task3: [
+            { q: "1. Tienes que afanarte ___ terminar este informe hoy mismo.", a: "en" },
+            { q: "2. Al entrar, apenas pudo reparar ___ la decoración porque estaba muy nervioso.", a: "en" },
+            { q: "3. La cena fue exquisita, regada ___ un vino tinto espectacular.", a: "con" },
+            { q: "4. No pudo soportarlo más y lo derribó ___ un fuerte manotazo.", a: "de" },
+            { q: "5. Era tarde, llovía y, ___ si fuera poco, se nos pinchó una rueda.", a: "por" },
+            { q: "6. Tenemos que dar ___ terminada la reunión, es muy tarde.", a: "por" },
+            { q: "7. Ocurrió todo tal ___ como te lo estoy contando.", a: "y" },
+            { q: "8. El documento estaba adjunto ___ correo de ayer.", a: "al" },
+            { q: "9. Vio la amenaza obvia ___ un virus en ese archivo.", a: "de" },
+            { q: "10. Sentó al niño ___ el asiento posterior por seguridad.", a: "en" },
+            { q: "11. Tras una rápida ojeada ___ correo basura, apagó el ordenador.", a: "al" },
+            { q: "12. Apreciaba los gritos ___ el interior de la casa.", a: "en" },
+            { q: "13. Él se afanaba ___ mantener las apariencias.", a: "en" },
+            { q: "14. No debes reparar ___ gastos para este proyecto.", a: "en" },
+            { q: "15. Todo fue regado ___ abundante champán.", a: "con" },
+            { q: "16. Lo tiró al suelo ___ un fuerte manotazo.", a: "de" },
+            { q: "17. Y ___ si fuera poco, perdió las llaves del coche.", a: "por" },
+            { q: "18. Vamos a dar el tema ___ concluido.", a: "por" },
+            { q: "19. Resolvió el problema tal ___ como le enseñaron.", a: "y" },
+            { q: "20. Se concentró ___ terminar el artículo a tiempo.", a: "en" },
+            { q: "21. Su comportamiento errático llenó ___ dudas a su equipo.", a: "de" },
+            { q: "22. La explanada estaba inundada ___ agua tras la tormenta.", a: "de" },
+            { q: "23. Se sentó en el asiento ___ acompañante.", a: "del" },
+            { q: "24. Enfiló la salida ___ paso rápido.", a: "con" },
+            { q: "25. Apretó el volante ___ ambas manos.", a: "con" },
+            { q: "26. Lo idolatraba ___ todo su corazón.", a: "con" },
+            { q: "27. Había un archivo adjunto ___ mensaje original.", a: "en el" }, 
+            { q: "28. Doy ___ hecho que vas a venir.", a: "por" },
+            { q: "29. Se fijó en el remitente ___ la carta.", a: "de" },
+            { q: "30. Fue derribado ___ un solo golpe.", a: "de" }
+        ],
+        task4: [
+            { q: "1. Era un miércoles de noviembre muy [_____], con frío y lluvia.", a: "sombrío" },
+            { q: "2. Los periodistas no dejaban de [_____] la redacción buscando respuestas.", a: "asediar" },
+            { q: "3. La [_____] del alcalde estaba programada para las diez en punto.", a: "comparecencia" },
+            { q: "4. Me cuesta mucho [_____] la concentración con tanto ruido.", a: "mantener" },
+            { q: "5. No abras ese archivo, contiene la [_____] obvia de un virus.", a: "amenaza" },
+            { q: "6. Esa maniobra con el coche fue una tremenda [_____].", a: "imprudencia" },
+            { q: "7. Había que [_____] los correos inútiles a la papelera.", a: "desechar" },
+            { q: "8. El [_____] del paquete no había puesto su dirección.", a: "remitente" },
+            { q: "9. Ver aquella sombra en la habitación hizo que se desatara la [_____].", a: "pesadilla" },
+            { q: "10. Subir por aquel camino de montaña tan [_____] me mareó.", a: "sinuoso" },
+            { q: "11. Tenía que [_____] la marcha porque había mucha niebla.", a: "ralentizar" },
+            { q: "12. Cruzaron la enorme [_____] antes de llegar al pabellón.", a: "explanada" },
+            { q: "13. Del pánico, empezó a apretar fuerte el [_____] con las manos sudorosas.", a: "volante" },
+            { q: "14. Solo alcanzaba a murmurar palabras [_____] que nadie entendía.", a: "ininteligibles" },
+            { q: "15. Le pregunté si quería venir y me dio una respuesta [_____]: un no rotundo.", a: "tajante" },
+            { q: "16. Desde la calle se podían [_____] los gritos en el interior del piso.", a: "apreciar" },
+            { q: "17. Nada más ver el peligro, decidió [_____] la salida.", a: "enfilar" },
+            { q: "18. El abuelo sacó su viejo [_____] de caza del armario.", a: "rifle" },
+            { q: "19. Dormir ocho horas no es un lujo, es una mera necesidad [_____].", a: "biológica" },
+            { q: "20. Ella solía [_____] a aquel actor, veía todas sus películas.", a: "idolatrar" },
+            { q: "21. Con ese conductor al volante, el trayecto se volvió completamente [_____].", a: "errático" },
+            { q: "22. Tras el susto, su [_____] se agita y el pulso se acelera.", a: "respiración" },
+            { q: "23. Si lo dejas hablar, te va a [_____] con sus quejas.", a: "inundar" },
+            { q: "24. El perro tenía una actitud muy [_____], enseñando los dientes.", a: "amenazante" },
+            { q: "25. La publicidad usa [_____] reclamos para vender más.", a: "llamativos" },
+            { q: "26. Me conformo con una comida tranquila [_____] con un buen vino.", a: "regada" },
+            { q: "27. No pude evitar que me [_____] el instinto y salí corriendo.", a: "apremiara" }, // apremiar
+            { q: "28. Fue [_____], no había duda alguna de que él mentía.", a: "ciertamente" },
+            { q: "29. Revisó su bandeja buscando entre el bombardeo de correo [_____].", a: "basura" },
+            { q: "30. Conducía visiblemente [_____] después de la discusión.", a: "alterado" }
+        ],
+        task5: [
+            { q: "1. 'Por si fuera poco'", options: ["Además de todo lo malo, para colmo.", "Un poco menos.", "Rápidamente."], a: "Además de todo lo malo, para colmo." },
+            { q: "2. 'Dar por terminado'", options: ["Pensar que algo no sirve.", "Considerar que algo ha concluido o finalizado.", "Regalar el trabajo."], a: "Considerar que algo ha concluido o finalizado." },
+            { q: "3. 'Tal y como'", options: ["Quizás.", "Exactamente de la manera que.", "De vez en cuando."], a: "Exactamente de la manera que." },
+            { q: "4. 'Apremiar el instinto'", options: ["Sentir que una fuerza interior te obliga a actuar de inmediato.", "Comer rápido.", "Llamar la atención."], a: "Sentir que una fuerza interior te obliga a actuar de inmediato." },
+            { q: "5. 'Desatarse la pesadilla'", options: ["Empezar una situación de terror o un problema grave.", "Desatar los zapatos en un sueño.", "Despertar aliviado."], a: "Empezar una situación de terror o un problema grave." },
+            { q: "6. 'Afanarse en'", options: ["Aburrirse.", "Esforzarse o trabajar con ahínco en una tarea.", "Huir de algo."], a: "Esforzarse o trabajar con ahínco en una tarea." },
+            { q: "7. 'Reparar en'", options: ["Arreglar un coche.", "Prestar atención, notar o darse cuenta de algo.", "Dudar."], a: "Prestar atención, notar o darse cuenta de algo." },
+            { q: "8. 'Mera necesidad biológica'", options: ["Algo que se hace simplemente porque el cuerpo lo exige para vivir.", "Un lujo innecesario.", "Un deseo caprichoso."], a: "Algo que se hace simplemente porque el cuerpo lo exige para vivir." },
+            { q: "9. 'Bombardeo de correo basura'", options: ["Ataque militar.", "Recibir una cantidad abrumadora e incesante de spam.", "Enviar cartas en papel."], a: "Recibir una cantidad abrumadora e incesante de spam." },
+            { q: "10. 'Responder tajante'", options: ["Contestar con evasivas.", "Responder de forma cortante, clara y que no admite réplica.", "Hablar en voz baja."], a: "Responder de forma cortante, clara y que no admite réplica." },
+            { q: "11. 'Enfilar la salida'", options: ["Hacer fila.", "Dirigirse en línea recta hacia la puerta o vía de escape.", "Cerrar la puerta con llave."], a: "Dirigirse en línea recta hacia la puerta o vía de escape." },
+            { q: "12. 'Ralentizar la marcha'", options: ["Caminar hacia atrás.", "Disminuir la velocidad a la que se avanza.", "Correr rápidamente."], a: "Disminuir la velocidad a la que se avanza." },
+            { q: "13. 'Derribar de un fuerte manotazo'", options: ["Acariciar con fuerza.", "Tirar algo al suelo usando un golpe violento con la mano.", "Saludar efusivamente."], a: "Tirar algo al suelo usando un golpe violento con la mano." },
+            { q: "14. 'Mantener la concentración'", options: ["Pensar en muchas cosas a la vez.", "Evitar distraerse y seguir enfocado en una tarea.", "Meditar en silencio."], a: "Evitar distraerse y seguir enfocado en una tarea." },
+            { q: "15. 'Comida regada con un buen vino'", options: ["Derramar vino sobre la mesa.", "Acompañar una comida consumiendo vino de buena calidad.", "Lavar los platos con vino."], a: "Acompañar una comida consumiendo vino de buena calidad." },
+            { q: "16. 'Conducir errático'", options: ["Manejar con maestría.", "Conducir de forma irregular, dando bandazos y sin un curso predecible.", "Manejar muy despacio."], a: "Conducir de forma irregular, dando bandazos y sin un curso predecible." },
+            { q: "17. 'Llamativos reclamos'", options: ["Gritos pidiendo ayuda.", "Anuncios o elementos visuales diseñados para atraer poderosamente la atención.", "Llamadas telefónicas perdidas."], a: "Anuncios o elementos visuales diseñados para atraer poderosamente la atención." },
+            { q: "18. 'Asediar la redacción'", options: ["Limpiar la oficina.", "Rodear o presionar continuamente a los periodistas de un medio.", "Enviar una carta al editor."], a: "Rodear o presionar continuamente a los periodistas de un medio." },
+            { q: "19. 'La respiración se agita'", options: ["Contener la respiración.", "Respirar de forma más rápida y dificultosa debido al estrés, miedo o esfuerzo.", "Respirar muy profundamente y en calma."], a: "Respirar de forma más rápida y dificultosa debido al estrés, miedo o esfuerzo." },
+            { q: "20. 'Murmurar palabras ininteligibles'", options: ["Gritar con claridad.", "Hablar entre dientes cosas que los demás no consiguen entender.", "Cantar una canción en otro idioma."], a: "Hablar entre dientes cosas que los demás no consiguen entender." },
+            { q: "21. 'Apreciar los gritos'", options: ["Estar agradecido por los gritos.", "Lograr escuchar o percibir voces altas o gritos desde la distancia.", "Gritar con otra persona."], a: "Lograr escuchar o percibir voces altas o gritos desde la distancia." },
+            { q: "22. 'Desechar un correo'", options: ["Enviar un correo.", "Eliminar, ignorar o descartar un mensaje.", "Leer un correo con atención."], a: "Eliminar, ignorar o descartar un mensaje." },
+            { q: "23. 'Amenaza obvia'", options: ["Un peligro latente y escondido.", "Un peligro o riesgo que es muy claro y evidente para cualquiera.", "Un juego inofensivo."], a: "Un peligro o riesgo que es muy claro y evidente para cualquiera." },
+            { q: "24. 'Apretar fuerte el volante'", options: ["Tocar la bocina.", "Agarrar el mando del coche con mucha tensión.", "Cambiar de marcha bruscamente."], a: "Agarrar el mando del coche con mucha tensión." },
+            { q: "25. 'Inundar la red de mensajes'", options: ["Quedarse sin conexión.", "Llenar de manera excesiva y abrumadora el sistema con mensajes.", "Borrar todos los mensajes."], a: "Llenar de manera excesiva y abrumadora el sistema con mensajes." },
+            { q: "26. 'Ciertamente'", options: ["Tal vez.", "Con toda seguridad, indudablemente.", "Mentira."], a: "Con toda seguridad, indudablemente." },
+            { q: "27. 'Día sombrío y desapacible'", options: ["Día oscuro, desagradable y que no invita a estar fuera.", "Día soleado y caluroso.", "Día festivo."], a: "Día oscuro, desagradable y que no invita a estar fuera." },
+            { q: "28. 'Archivo adjunto'", options: ["Documento que se une o incluye junto a un email.", "Carpeta vacía.", "El asunto del correo."], a: "Documento que se une o incluye junto a un email." },
+            { q: "29. 'Instinto'", options: ["Conocimiento adquirido estudiando.", "Impulso natural e innato que provoca una acción.", "Una orden del jefe."], a: "Impulso natural e innato que provoca una acción." },
+            { q: "30. 'Ojeada'", options: ["Mirada rápida y superficial a algo.", "Lectura profunda y analítica.", "Cerrar los ojos."], a: "Mirada rápida y superficial a algo." }
+        ],
+        task6: [
+            { q: "1. El jefe me ordenó ayer que (afanarse) ___ en terminar el artículo antes de las cinco.", options: ["me afanara", "me afano", "me afanaré"], a: "me afanara" },
+            { q: "2. Si tú no (conducir) ___ tan errático, no nos habrían parado los policías anoche.", options: ["conducirías", "hubieras conducido", "conduciste"], a: "hubieras conducido" },
+            { q: "3. Alcalde, por favor, (dar) ___ por terminada la comparecencia.", options: ["da", "dé", "dio"], a: "dé" },
+            { q: "4. No (desechar - tú) ___ ese correo sin antes reparar en el archivo adjunto.", options: ["desechas", "desecharás", "deseches"], a: "deseches" },
+            { q: "5. Cuando llegué a la oficina, los reporteros ya (asediar) ___ la redacción durante horas.", options: ["asediaban", "asedian", "asedien"], a: "asediaban" },
+            { q: "6. Me pidió que le (idolatrar) ___ menos y lo tratara como a un igual.", options: ["idolatrara", "idolatro", "idolatraré"], a: "idolatrara" },
+            { q: "7. En cuanto (desatarse) ___ la pesadilla la semana pasada, todos corrimos hacia la explanada.", options: ["se desate", "se desató", "se desataba"], a: "se desató" },
+            { q: "8. Era imprescindible que él (ralentizar) ___ la marcha al tomar esa curva tan sinuosa.", options: ["ralentizara", "ralentice", "ralentizó"], a: "ralentizara" },
+            { q: "9. ¡(Enfilar - vosotros) ___ la salida inmediatamente!", options: ["Enfilen", "Enfilad", "Enfiláis"], a: "Enfilad" },
+            { q: "10. Le sorprendió que su jefe (responder) ___ tajante en la reunión de ayer.", options: ["respondió", "respondiera", "responde"], a: "respondiera" },
+            { q: "11. Aunque (apreciar - yo) ___ gritos en el interior en ese momento, decidí no entrar.", options: ["aprecié", "aprecie", "apreciara"], a: "aprecié" },
+            { q: "12. Dudo que esto (ser) ___ una mera necesidad biológica.", options: ["es", "era", "sea"], a: "sea" },
+            { q: "13. Ojalá (mantener - nosotros) ___ la concentración durante toda la prueba de ayer.", options: ["mantuvimos", "hubiéramos mantenido", "mantenemos"], a: "hubiéramos mantenido" },
+            { q: "14. Le aconsejó que (sentar) ___ al niño en el asiento posterior.", options: ["siente", "sentara", "sentó"], a: "sentara" },
+            { q: "15. (Apretar - tú) ___ fuerte el volante, que viene una zona de baches.", options: ["Aprieta", "Aprietes", "Apretabas"], a: "Aprieta" },
+            { q: "16. No creí que él (derribar) ___ la puerta de un fuerte manotazo.", options: ["derriba", "derribara", "derribó"], a: "derribara" },
+            { q: "17. Mientras yo leía, él (murmurar) ___ palabras ininteligibles.", options: ["murmuraba", "murmure", "murmuró"], a: "murmuraba" },
+            { q: "18. Antes de que (llegar) ___ el virus, ya habíamos borrado el adjunto.", options: ["llegara", "llegó", "llegaba"], a: "llegara" },
+            { q: "19. Nos alegró que la comida (estar) ___ regada con un buen vino.", options: ["estuvo", "estuviera", "esté"], a: "estuviera" },
+            { q: "20. No (inundar - tú) ___ mi bandeja con tus reclamaciones, por favor.", options: ["inundas", "inundes", "inundaste"], a: "inundes" },
+            { q: "21. Me frustró que, por si (ser) ___ poco, el coche se estropeara.", options: ["fue", "fuera", "es"], a: "fuera" },
+            { q: "22. Esperaba que todo ocurriera tal y como (planear - nosotros) ___ la víspera.", options: ["planeamos", "habíamos planeado", "planeáramos"], a: "habíamos planeado" },
+            { q: "23. Si mi instinto me (apremiar) ___, yo habría actuado distinto.", options: ["apremia", "habría apremiado", "hubiera apremiado"], a: "hubiera apremiado" },
+            { q: "24. En el momento del choque, su respiración (agitarse) ___ visiblemente.", options: ["se agitó", "se agite", "se agitara"], a: "se agitó" },
+            { q: "25. Fue un milagro que no (cometer) ___ una imprudencia mayor ayer.", options: ["cometiera", "cometió", "comete"], a: "cometiera" },
+            { q: "26. No (conducir - usted) ___ alterado, es muy peligroso.", options: ["conduzca", "conduce", "condujo"], a: "conduzca" },
+            { q: "27. Cuando vio el rifle de caza, su actitud (volverse) ___ amenazante.", options: ["se volvió", "se vuelve", "se volviera"], a: "se volvió" },
+            { q: "28. Quería que los llamativos reclamos (atraer) ___ a más clientes al evento pasado.", options: ["atraigan", "atrajeran", "atraían"], a: "atrajeran" },
+            { q: "29. Siempre que leía esos correos, echaba una ojeada rápida y los (desechar) ___ inmediatamente.", options: ["desechaba", "deseche", "desechó"], a: "desechaba" },
+            { q: "30. (Mirar - vosotros) ___ al remitente antes de abrir cualquier archivo adjunto.", options: ["Miren", "Mirad", "Miráis"], a: "Mirad" }
+        ]
+    };
+
+    const normalize = (str) => {
+        return (str || "").toLowerCase().trim()
+            .replace(/[.,;!?]/g, "")
+            .replace(/\s+/g, " ");
+    };
+
+    const getEditDistance = (a, b) => {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        const matrix = [];
+        for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
+                    );
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    };
+
+    function renderOptions(id, taskData) {
+        let html = '';
+        taskData.forEach((item, index) => {
+            html += `<div class="question"><label>${item.q}</label>
+                     <select data-ans="${item.a}">
+                        <option value="">-- Elige una opción --</option>`;
+            let ops = [...item.options].sort(() => Math.random() - 0.5);
+            ops.forEach(opt => { html += `<option value="${opt}">${opt}</option>`; });
+            html += `</select>
+            <span class="correct-ans"></span><span class="status-icon"></span></div>`;
+        });
+        document.getElementById(id).innerHTML = html;
+    }
+
+    function renderInputs(id, taskData) {
+        let html = '';
+        taskData.forEach((item, index) => {
+            html += `<div class="question"><label>${item.q}</label>
+                     <input type="text" data-ans="${item.a}" placeholder="Escribe aquí...">
+                     <span class="correct-ans"></span><span class="status-icon"></span></div>`;
+        });
+        document.getElementById(id).innerHTML = html;
+    }
+
+    const wordBankWords = ["sombrío", "asediar", "comparecencia", "mantener", "amenaza", "imprudencia", "desechar", "remitente", "pesadilla", "sinuoso", "ralentizar", "explanada", "volante", "ininteligibles", "tajante", "apreciar", "enfilar", "rifle", "biológica", "idolatrar", "errático", "respiración", "inundar", "amenazante", "llamativos", "regada", "apremiara", "ciertamente", "basura", "alterado"].sort();
+    let wbHtml = '';
+    wordBankWords.forEach(w => { wbHtml += `<span>${w}</span>`; });
+    document.getElementById('wordBank').innerHTML = wbHtml;
+
+    renderOptions('task1', data.task1);
+    renderInputs('task2', data.task2);
+    renderInputs('task3', data.task3);
+    
+    let t4html = '';
+    data.task4.forEach((item, index) => {
+        let qText = item.q.replace('[_____]', `<input type="text" data-ans="${item.a}" style="width: 150px; text-align: center;">`);
+        t4html += `<div class="question"><label>${qText}</label>
+                   <span class="correct-ans"></span><span class="status-icon"></span></div>`;
+    });
+    document.getElementById('task4').innerHTML = t4html;
+
+    renderOptions('task5', data.task5);
+    renderOptions('task6', data.task6);
+
+    function checkAnswers() {
+        let score = 0;
+        let total = 0;
+        
+        // Revisar selects
+        document.querySelectorAll('select').forEach(select => {
+            total++;
+            let ans = select.getAttribute('data-ans');
+            let parent = select.closest('.question');
+            let icon = parent.querySelector('.status-icon');
+            let ansLabel = parent.querySelector('.correct-ans');
+            
+            if (select.value === ans) {
+                score++;
+                select.style.borderColor = 'var(--correct)';
+                icon.innerHTML = '✅';
+                icon.style.color = 'var(--correct)';
+                ansLabel.style.display = 'none';
+            } else {
+                select.style.borderColor = 'var(--incorrect)';
+                icon.innerHTML = '❌';
+                icon.style.color = 'var(--incorrect)';
+                ansLabel.innerHTML = `Respuesta: ${ans}`;
+                ansLabel.style.color = 'var(--correct)';
+                ansLabel.style.display = 'inline';
+            }
+        });
+
+        // Revisar inputs con tolerancia a errores tipográficos (Levenshtein)
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            total++;
+            let ansRaw = input.getAttribute('data-ans');
+            let ans = normalize(ansRaw);
+            let val = normalize(input.value);
+            
+            let parent = input.closest('.question'); // Soluciona el problema de Block 4
+            let icon = parent.querySelector('.status-icon');
+            let ansLabel = parent.querySelector('.correct-ans');
+
+            let distance = getEditDistance(val, ans);
+            
+            // Tolerancia: 0 errores si la palabra es corta. 1-2 si es larga o frase.
+            let allowedTypos = 0;
+            if (ans.length > 3 && ans.length <= 7) allowedTypos = 1;
+            else if (ans.length > 7) allowedTypos = 2;
+            
+            if (val.length === 0) allowedTypos = 0; // Si no hay respuesta, no cuenta
+
+            let isCorrect = (val === ans) || (distance <= allowedTypos);
+
+            if (isCorrect) {
+                score++;
+                input.style.borderColor = 'var(--correct)';
+                icon.innerHTML = '✅';
+                icon.style.color = 'var(--correct)';
+                
+                if (distance > 0) {
+                    // Mostrar un pequeño aviso de la corrección tipográfica
+                    ansLabel.innerHTML = `(Aceptado con ${distance} ojalá/s. Exacto: ${ansRaw})`;
+                    ansLabel.style.color = 'var(--typo)';
+                    ansLabel.style.display = 'inline';
+                } else {
+                    ansLabel.style.display = 'none';
+                }
+            } else {
+                input.style.borderColor = 'var(--incorrect)';
+                icon.innerHTML = '❌';
+                icon.style.color = 'var(--incorrect)';
+                ansLabel.innerHTML = `Respuesta: ${ansRaw}`;
+                ansLabel.style.color = 'var(--correct)';
+                ansLabel.style.display = 'inline';
+            }
+        });
+
+        document.getElementById('score').innerText = score;
+        document.getElementById('total').innerText = total;
+        
+        // Calcular porcentaje
+        let percentage = Math.round((score / total) * 100);
+        document.getElementById('percentage').innerText = percentage;
+        
+        document.getElementById('result-container').style.display = 'block';
+        document.getElementById('result-container').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
